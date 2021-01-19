@@ -96,10 +96,8 @@ class Sessions {
     }
 
     emitToID(id,thread,type,d) {
-        this.sessions.forEach((s) => {
-            if (s.id !== id) return;
-            s.send(type,d,thread);
-        });
+        if (!this.sessions.has(id)) return;
+        this.sessions.get(id).send(type,d,thread);
     }
 
     static ToXML(js) {
