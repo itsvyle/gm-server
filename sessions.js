@@ -244,20 +244,22 @@ class Sessions {
         });
         if (ws_ === true) {
             var expressWs = require('express-ws')(router);
-            router.ws("/ws",function (ws,req) {par.handleWS(ws,req);});
-            
+            router.ws("/ws",function (ws,req) {
+                par.handleWS(ws,req);
+            });
         }
 
         return router;
     }
 
-    handleWS(ws,res) {
+    handleWS(ws,req) {
         let par =this;
         if (!req.query.thread) {
             ws.close(4000,"Error: missing thread attribute");
         }
         let da = {};
         for(let n in req.query) {
+            console.log(n);
             if (n === "thread") continue;
             da[n] = req.query[n];
         }
