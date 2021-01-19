@@ -272,9 +272,10 @@ class Session {
         });
     }
 
-    send(type,d) {
+    send(type,d,thread) {
+        if (!thread) thread = this.thread;
         this.items.push({
-            thread: this.thread,
+            thread: thread,
             type: type,
             d: d
         });
