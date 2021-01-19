@@ -140,8 +140,8 @@ class Sessions {
         return _JSONToXML("xml",j).trim();
     }
 
-    getRouter(ws) {
-        if (!ws || typeof(ws) != "boolean") ws = false;
+    getRouter(ws_) {
+        if (!ws_ || typeof(ws_) != "boolean") ws_ = false;
         var express = require('express');
         var router = express.Router();
         
@@ -242,23 +242,26 @@ class Sessions {
                 status: 1
             }));
         });
-
-        if (ws === true) {
+        if (ws_ === true) {
             var expressWs = require('express-ws')(router);
-            router.ws("/ws",function (ws,req) {
-                if (!req.query.thread) {
-                    ws.close(4000,"Error: missing thread attribute");
-                }
-                let da = {};
-                for(let n in req.query) {
-                    if (n === "thread") continue;
-                    da[n] = req.query[n];
-                }
-                let s = par.createWSSession(ws,req.query.thread,da);
-            });
+            router.ws("/ws",function (ws,req) {par.handleWS(ws,req);});
+            
         }
 
         return router;
+    }
+
+    handleWS(ws,res) {
+        let par =this;
+        if (!req.query.thread) {
+            ws.close(4000,"Error: missing thread attribute");
+        }
+        let da = {};
+        for(let n in req.query) {
+            if (n === "thread") continue;
+            da[n] = req.query[n];
+        }
+        let s = par.createWSSession(ws,req.query.thread,da);
     }
 
 }
