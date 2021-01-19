@@ -259,7 +259,6 @@ class Sessions {
         }
         let da = {};
         for(let n in req.query) {
-            console.log(n);
             if (n === "thread") continue;
             da[n] = req.query[n];
         }
