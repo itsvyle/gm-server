@@ -95,6 +95,13 @@ class Sessions {
         });
     }
 
+    emitToID(id,thread,type,d) {
+        this.sessions.forEach((s) => {
+            if (s.id !== id) return;
+            s.send(type,d,thread);
+        });
+    }
+
     static ToXML(js) {
         var escaping = {
             attribute: function (str) {return str.replaceAll('<',"&lt;").replaceAll('&',"&amp;").replaceAll('"',"&quot;").replaceAll("'","&apos;");},
