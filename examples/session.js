@@ -94,7 +94,6 @@ gm.onload(onload);
 var not,session;
 function onload() {
     not = new gm.NotificationMessages();
-    gm.supportWS = function () {return false;};
     session = new gm.Server.Session("/sessions","test");
     session.onError = function (e) {
         not.addMessage(e,"background-color: red;",5000,true);
