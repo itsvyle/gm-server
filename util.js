@@ -75,5 +75,27 @@ module.exports = {
         });
         return res;
     },
-    projectURL: "https://remote.lfny.repl.co"
+    projectURL: "https://remote.lfny.repl.co",
+    request: function (request,opts,clb) {
+        if (typeof(clb) !== "function") clb = () => {};
+        if (!request) return clb({status: 0,error: "Request must be an imported request npm instance"});
+        if (!opts.url) return clb({status: 0,error: "'opts' must be an object with a 'url' property"});
+        let url = opts.url;
+        delete opts['url'];
+        request(url,opts,function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+				clb({
+					status: 1,
+					code: response.statusCode,
+					body: body
+				});
+			} else {
+				clb({
+					status: 0,
+					error: error || body,
+					code: response.statusCode
+				});
+			}
+        });
+    }
 };
