@@ -173,10 +173,13 @@ module.exports = {
         }
         return true;
     },
-    express: function (options = {port: 3000,post: false},express) {
+    express: function ({port,post,express}) {
         if (!express) express = require("express");
+        if (!port) port = 3000;
+        if (!post) post = false;
+
         var app = express();
-        if (options.post === true) {
+        if (post === true) {
             var bodyParser = require('body-parser');
             app.use(bodyParser.json({limit: "50mb"}));
             app.use(bodyParser.urlencoded({limit: "50mb",extended: true}));
