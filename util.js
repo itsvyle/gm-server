@@ -163,5 +163,6 @@ module.exports = {
             if (typeof(clb) !== "function") {clb = () => {};}
             app.listen(port,() => {clb();});
         };
+        return app;
     }
 };
