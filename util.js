@@ -200,9 +200,8 @@ module.exports = {
         };
         return app;
     },
-    parseCookies:function (request) {
-        var list = {},
-            rc = request.headers.cookie;
+    parseCookies:function (rc) {
+        var list = {};//rc = request.headers.cookie;
 
         rc && rc.split(';').forEach(function( cookie ) {
             var parts = cookie.split('=');
