@@ -173,7 +173,7 @@ module.exports = {
         }
         return true;
     },
-    express: function (port,options = {post: false},express) {
+    express: function (options = {port: 3000,post: false},express) {
         if (!express) express = require("express");
         var app = express();
         if (options.post === true) {
