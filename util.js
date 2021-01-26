@@ -173,9 +173,14 @@ module.exports = {
         }
         return true;
     },
-    express: function (port,express) {
+    express: function (port,options = {post: false},express) {
         if (!express) express = require("express");
         var app = express();
+        if (options.post === true) {
+            var bodyParser = require('body-parser');
+            app.use(bodyParser.json({limit: "50mb"}));
+            app.use(bodyParser.urlencoded({limit: "50mb",extended: true}));
+        }
         app.connect = function (clb) {
             if (clb === true) clb = () => {console.log("App listening at port: " + port);};
             if (typeof(clb) !== "function") {clb = () => {};}
