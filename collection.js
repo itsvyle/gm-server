@@ -87,9 +87,10 @@ class Collection extends Map {
         this.noDuplicateID = n;
     }
 
-    toObject() {
+    toObject(primer) {
+        const p = (typeof(primer) === "function");
         var ret = {};
-        this.forEach((v,k,m) => {ret[k] = v;});
+        this.forEach((v,k,m) => {ret[k] = (p == true) ? primer(v,k) : v;});
         return ret;
     }
 
