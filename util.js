@@ -159,7 +159,9 @@ module.exports = {
         if (!express) express = require("express");
         var app = express();
         app.connect = function (clb) {
-            app.list(port,() => {clb();});
+            if (clb === true) clb = () => {console.log("App listening at port: " + port);};
+            if (typeof(clb) !== "function") {clb = () => {};}
+            app.listen(port,() => {clb();});
         };
     }
 };
