@@ -149,5 +149,10 @@ module.exports = {
         } else {
             return String(milliseconds) + "s";
         }
-    }
+    },
+	UTCTime: function (d1) {
+		if (!d1) {d1 = new Date();}
+        var now = new Date(d1.getUTCFullYear(),d1.getUTCMonth(),d1.getUTCDate(),d1.getUTCHours(),d1.getUTCMinutes(),d1.getUTCSeconds(),d1.getUTCMilliseconds());
+        return now.getTime();
+	}
 };

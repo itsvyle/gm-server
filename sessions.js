@@ -1,21 +1,16 @@
-function JSONParse(s) {
-    try {return JSON.parse(s);} catch (err) {return null;}
-}
 
+
+const {JSONParse,toXML} = require("./util.js");
 const Collection = require("./collection.js");
 const EventEmitter = require("events");
 
-class Sessions {
+class Sessions extends EventEmitter {
     constructor(session_timeout) {
+		super();
         this.sessions = new Collection();
         this.sessions.setNoDuplicateID(true);
         if (!session_timeout || typeof(session_timeout) !== "number") session_timeout = 90 * 1000;
         this.session_timeout = session_timeout;
-
-        Object.defineProperty(this, 'events', {
-            value: new EventEmitter(),
-            writable: true
-        });
 
         let par = this;
         Object.defineProperty(this, 'timer', {
@@ -37,7 +32,7 @@ class Sessions {
                     try {s.ws.close(1000,"Tiemout");}catch(ere) {}
                     par.sessions.delete(s.id);
                 }
-                par.events.emit("session_timeout",s);
+                par.emit("session_timeout",s);
             }
         });
     }
@@ -47,7 +42,7 @@ class Sessions {
         let s = this.sessions.get(id);
         if (!s) return;
         this.sessions.delete(id);
-        this.events.emit("session_close",s);
+        this.emit("session_close",s);
     }
 
     createSession(thread,data) {
@@ -58,7 +53,7 @@ class Sessions {
         let s = new Session(thread,id);
         s.data = data;
         this.sessions.set(id,s);
-        this.events.emit("session_create",s);
+        this.emit("session_create",s);
         return s;
     }
 
@@ -79,7 +74,7 @@ class Sessions {
         s.encoding = enc;
         s.init(this.session_timeout);
         this.sessions.set(id,s);
-        this.events.emit("session_create",s);
+        this.emit("session_create",s);
         return s;
     }
 
@@ -88,56 +83,16 @@ class Sessions {
         return this.sessions.get(id).get();
     }
 
-    emit(thread,type,d) {
+    send(thread,type,d) {
         this.sessions.forEach((s) => {
             if (s.thread !== thread) return;
             s.send(type,d);
         });
     }
 
-    emitToID(id,thread,type,d) {
+    sendToID(id,thread,type,d) {
         if (!this.sessions.has(id)) return;
         this.sessions.get(id).send(type,d,thread);
-    }
-
-    static ToXML(js) {
-        var escaping = {
-            attribute: function (str) {return str.replaceAll('<',"&lt;").replaceAll('&',"&amp;").replaceAll('"',"&quot;").replaceAll("'","&apos;");},
-            content: function (str){return str.replaceAll('<',"&lt;").replaceAll('&',"&amp;");}
-        };
-
-        var _JSONToXML = function (key,value) {
-            var r = `<${key} `;
-            var inner = "";
-            if (!typeof(value)) {return "";}
-            if (Array.isArray(value)) {
-                for(let item of value) {
-                    inner += _JSONToXML("item",item);
-                }
-            } else if (value == null) {
-            } else if (typeof(value) == "object") {
-                for(let k in value) {
-                    let v = value[k];
-                    if (v == null) {continue;}
-                    if (typeof(v) == "boolean") {v = (v === true) ? 1 : 0;}
-                    if (!typeof(v)) {continue;}
-                    if (typeof(v) == "string" || typeof(v) == "number") {
-                        r += `${k}="${escaping.attribute(String(v))}" `;
-                    } else if (Array.isArray(v)) {
-                        inner += nl + _JSONToXML(k,v);
-                    } else if (typeof(v) == "object") {
-                        inner += nl + _JSONToXML(k,v);
-                    }
-                }
-            } else {
-                if (typeof(value) == "boolean") {value = (value === true) ? 1 : 0;}
-                if (typeof(value) == "string" || typeof(value) == "number") {
-                    inner = escaping.content(value);
-                }
-            }
-            return r.trim() + ">" + inner + `</${key}>` + nl;
-        };
-        return _JSONToXML("xml",j).trim();
     }
 
     getRouter(ws_) {
@@ -237,7 +192,7 @@ class Sessions {
             }
             if (!o.thread) o.thread = s.thread;
             if (!o.d) o.d = null;
-            par.events.emit("message",s,o);
+            par.emit("message",s,o);
             res.send(JSON.stringify({
                 status: 1
             }));
@@ -390,7 +345,7 @@ class WSSession {
             }
             return;
         }
-        this.sessions.events.emit("message",this,m);
+        this.sessions.emit("message",this,m);
     }
     
     tick() {
