@@ -139,17 +139,17 @@ module.exports = {
             .replace(/'/g, "&#039;");
     },
     formatTime: function (milliseconds) {
-        if (typeof(milliseconds) != "number") {return milliseconds;}
-        if (milliseconds >= (3600 * 24 * 1000)) {//more than a day
-            return `${Math.floor(milliseconds / (1000 * 60 * 60 * 24))}d ${Math.floor((milliseconds % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))}h ${Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60))}m ${Math.floor((milliseconds % (1000 * 60)) / 1000)}s`;
-        } else if (milliseconds >= 3600 * 1000) {
-            return `${Math.floor((milliseconds % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))}h ${Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60))}m ${Math.floor((milliseconds % (1000 * 60)) / 1000)}s`;
-        } else if (milliseconds >= 60 * 1000) {
-            return `${Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60))}m ${Math.floor((milliseconds % (1000 * 60)) / 1000)}s`;
-        } else {
-            return String(milliseconds) + "s";
-        }
-    },
+		if (typeof(milliseconds) != "number") {return milliseconds;}
+		if (milliseconds >= (3600 * 24 * 1000)) {//more than a day
+		    return String(Math.floor(milliseconds / (1000 * 60 * 60 * 24))) + "d " + String(Math.floor((milliseconds % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))) + "h " + String(Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60))) + "m " + Math.floor((milliseconds % (1000 * 60)) / 1000) + "s";
+		} else if (milliseconds >= 3600 * 1000) {
+		    return String(Math.floor((milliseconds % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))) + "h " + String(Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60)))+ "m " + String(Math.floor((milliseconds % (1000 * 60)) / 1000)) + "s";
+		} else if (milliseconds >= 60 * 1000) {
+		    return String(Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60))) + "m " + String(Math.floor((milliseconds % (1000 * 60)) / 1000)) + "s";
+		} else {
+		    return String(Math.round(milliseconds / 1000)) + "s";
+		}
+},
 	UTCTime: function (d1) {
 		if (!d1) {d1 = new Date();}
         var now = new Date(d1.getUTCFullYear(),d1.getUTCMonth(),d1.getUTCDate(),d1.getUTCHours(),d1.getUTCMinutes(),d1.getUTCSeconds(),d1.getUTCMilliseconds());
@@ -163,7 +163,7 @@ module.exports = {
         if (keys1.length !== keys2.length) {
             return false;
         }
-        for(var i = i;i < keys1.length;i++) {
+        for(var i = 0;i < keys1.length;i++) {
             var key = keys1[i];
             var val1 = object1[key];
             var val2 = object2[key];
