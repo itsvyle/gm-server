@@ -185,6 +185,24 @@ module.exports = {
             return String(milliseconds) + "s";
         }
     },
+	deepEqual:  function (object1, object2) {
+        var isObject = function (object) {return (object != null && typeof object === 'object');};
+        var keys1 = Object.keys(object1);
+        var keys2 = Object.keys(object2);
+
+        if (keys1.length !== keys2.length) {
+            return false;
+        }
+        for(var i = 0;i < keys1.length;i++) {
+            var key = keys1[i];
+            var val1 = object1[key];
+            var val2 = object2[key];
+            var areObjects = isObject(val1) && isObject(val2);
+            if (areObjects && !this.deepEqual(val1, val2) || !areObjects && val1 !== val2
+            ) {return false;}
+        }
+        return true;
+    },
 	UTCTime: function (d1) {
 		if (!d1) {d1 = new Date();}
         var now = new Date(d1.getUTCFullYear(),d1.getUTCMonth(),d1.getUTCDate(),d1.getUTCHours(),d1.getUTCMinutes(),d1.getUTCSeconds(),d1.getUTCMilliseconds());
