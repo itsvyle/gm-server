@@ -198,7 +198,8 @@ class Sessions extends EventEmitter {
             }));
         });
         if (ws_ === true) {
-            var expressWs = require('express-ws')(router);
+            let bd = 'express-ws';
+            var expressWs = require(bd)(router);
             router.ws("/ws",function (ws,req) {
                 par.handleWS(ws,req);
             });
