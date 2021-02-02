@@ -314,6 +314,29 @@ module.exports = {
 		});
 
 		return list;
-	}
+	},
+	setupEval: function () {
+	    const resetColor = "\x1b[0m";
+	    const readline = require('readline');
+	    const rl = readline.createInterface({
+		input: process.stdin,
+		output: process.stdout
+	    });
 
+	    var askReadCommand = function () {
+		rl.question("Command:", (answer) => {
+		    console.log("\x1b[34m",answer,resetColor);
+		    if (answer === ".exit") {return process.exit(1);}
+		    try {
+			var m = eval(answer);
+		    } catch (e) {
+			console.error(e);
+		    }
+		    if (!m && m !== 0 && m !== false && m !== [] && (m === null && m === undefined)) {m = "Done";}
+		    console.log("\x1b[34m",m,resetColor);
+		    askReadCommand();
+		});
+	    }
+	    askReadCommand();
+	}
 };
