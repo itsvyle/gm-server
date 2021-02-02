@@ -277,13 +277,15 @@ module.exports = {
 		post,
 		express
 	}) {
-		if (!express) express = require("exp" + "ress");
+        let bd = "express";
+		if (!express) express = require(bd);
 		if (!port) port = 3000;
 		if (!post) post = false;
 
 		var app = express();
 		if (post === true) {
-			var bodyParser = require('body-parser');
+            let bd = "body-parser";
+			var bodyParser = require(bd);
 			app.use(bodyParser.json({
 				limit: "50mb"
 			}));
