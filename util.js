@@ -277,7 +277,7 @@ module.exports = {
 		post,
 		express
 	}) {
-		if (!express) express = require("express");
+		if (!express) express = require("exp" + "ress");
 		if (!port) port = 3000;
 		if (!post) post = false;
 
