@@ -97,7 +97,8 @@ class Sessions extends EventEmitter {
 
     getRouter(ws_) {
         if (!ws_ || typeof(ws_) != "boolean") ws_ = false;
-        var express = require('express');
+        let bd = "express";
+        var express = require(bd);
         var router = express.Router();
         
         let par = this;
