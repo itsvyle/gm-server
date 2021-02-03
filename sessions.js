@@ -37,10 +37,13 @@ class Sessions extends EventEmitter {
         });
     }
 
-    close(id) {
+    close(id,reason) {
         if (!id) return;
         let s = this.sessions.get(id);
         if (!s) return;
+        if (s instanceof WSSession) {
+            try {s.ws.close(4000,"Session manually closed (" + (reason || "NO REASON") + ")");} catch (err) {}
+        }
         this.sessions.delete(id);
         this.emit("session_close",s);
     }
@@ -193,6 +196,7 @@ class Sessions extends EventEmitter {
             }
             if (!o.thread) o.thread = s.thread;
             if (!o.d) o.d = null;
+            console.log(o);
             par.emit("message",s,o);
             res.send(JSON.stringify({
                 status: 1
