@@ -115,10 +115,6 @@ module.exports = {
 			opts.headers = {
 				"content-type": "application/x-www-form-urlencoded"
 			};
-		} else {
-			if (!opts.headers['content-type']) {
-				opts.headers['content-type'] = "application/x-www-form-urlencoded";
-			}
 		}
 
 		if (!Array.isArray(opts.accept_codes)) {
@@ -130,14 +126,28 @@ module.exports = {
 		}
 
 		let options = {};
-		options.headers = opts.headers;
+
+        if (opts.body !== null && typeof(opts.body) == "object") {
+            opts.body = JSON.stringify(opts.body);
+            if (!opts.headers['content-type']) {
+                opts.headers['content-type'] = "application/json";
+            }
+        }
+
 		if (!!opts.body) {
 			options.body = opts.body;
 		}
+
+        if (!opts.headers['content-type']) {
+            opts.headers['content-type'] = "application/x-www-form-urlencoded";
+        }
+        options.headers = opts.headers;
+
 		if (!!opts.extra_attributes && typeof (opts.extra_attributes) == "object") {
 			options = Object.assign(options, opts.extra_attributes);
 		}
 
+        
 		request(url, options, function (error, response, body) {
 			var r = {
 				status: null,
