@@ -168,6 +168,7 @@ module.exports = {
 				r.status = 0;
 				r.error_level = 1;
 				r.error = "Error making request(" + String(r.http_code) + ": " + body + ")";
+                if (opts.json === true) {r.res = JSONParse(body);}
 			} else {
 				r.status = 1;
 				if (opts.json === true) {
