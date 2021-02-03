@@ -126,7 +126,7 @@ module.exports = {
 		}
 
 		let options = {};
-
+        options.method = opts.method;
         if (opts.body !== null && typeof(opts.body) == "object") {
             opts.body = JSON.stringify(opts.body);
             if (!opts.headers['content-type']) {
@@ -146,8 +146,6 @@ module.exports = {
 		if (!!opts.extra_attributes && typeof (opts.extra_attributes) == "object") {
 			options = Object.assign(options, opts.extra_attributes);
 		}
-
-        
 		request(url, options, function (error, response, body) {
 			var r = {
 				status: null,
