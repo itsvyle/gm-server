@@ -5,6 +5,10 @@ if (!String.prototype.replaceAll) {
 	};
 }
 
+const ErrorCodes = {
+    "404": ["Not Found","This page could not be found"]
+};
+
 var errorPage = "";
 
 const nl = `
@@ -375,9 +379,21 @@ module.exports = {
 	},
     errorPage: function (code,shortDesc,text,title) {
         if (!code) {return "Missing code argument in errorPage";}
-        if (!text) text = "";
-        if (!shortDesc) {return "Invalid 'shortDesc'";}
+        if (!shortDesc) {
+            if (!(String(code) in ErrorCodes)) {return "Invalid 'shortDesc'";}
+            let e = ErrorCodes[String(code)];
+            if (Array.isArray(e)) {
+                shortDesc = e[0];
+                if (!text) {text = e[1];}
+                if (e.length > 2) {
+                    if (!title) {title = e[2];}
+                }
+            } else {
+                shortDesc = e;
+            }
+        }
         if (!title) title = shortDesc;
+        if (!text) text = "";
         if (title.startsWith("raw:") !== true) {
             title = String(code) + " - " + title;
         } else {
@@ -412,10 +428,10 @@ module.exports = {
             if (err) {
                 //res.sendStatus(404);
                 if (typeof(clb) === "function") {
-                    return clb(404,par.errorPage(404,"Not Found","","Not Found"));
+                    return clb(404,par.errorPage(404));
                 }
                 res.status(404);
-                return res.send(par.errorPage(404,"Not Found","","Not Found"));
+                return res.send(par.errorPage(404));
             }
             if (filename.endsWith('.css')) {
                 res.set('Content-Type', 'text/css; charset=UTF-8');
