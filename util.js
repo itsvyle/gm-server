@@ -1,8 +1,11 @@
+const fs = require("fs");
 if (!String.prototype.replaceAll) {
 	String.prototype.replaceAll = function (search, replace) {
 		return this.split(search).join(replace);
 	};
 }
+
+var errorPage = "";
 
 const nl = `
 `;
@@ -369,5 +372,34 @@ module.exports = {
 			ret += n + "=" + v;
 		}
 		return ret;
-	}
+	},
+    errorPage: function (code,shortDesc,text,title) {
+        if (!code) {return "Missing code argument in errorPage";}
+        if (!text) text = "";
+        if (!shortDesc) {return "Invalid 'shortDesc'";}
+        if (!title) title = shortDesc;
+        if (title.startsWith("raw:") !== true) {
+            title = String(code) + " - " + title;
+        } else {
+            title = title.slice("raw:".length);
+        }
+
+        if (!errorPage) {
+            try {
+                errorPage = fs.readFileSync(__dirname + "/errorPage.html");
+                //console.log(errorPage.toString());
+                errorPage = errorPage.toString();
+            } catch (err) {
+                return "Error getting error page";
+            }
+        }
+        if (!errorPage) return "Error getting page";
+        let d = errorPage;
+        let repl = function (a,b) {d = d.split(a).join(b);};
+        repl("{page-title}",title);
+        repl("{error-code}",code);
+        repl("{error-desc}",shortDesc);
+        repl("{error-text}",text || "");
+        return d;
+    }
 };
