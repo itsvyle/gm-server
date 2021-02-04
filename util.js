@@ -350,10 +350,24 @@ module.exports = {
 	    }
 	    askReadCommand();
 	},
-	    PromiseError: function (error) {
+    PromiseError: function (error) {
         return new Promise(function (reso,rej) {
             return rej(error);
         });
-    }
-
+    },
+    buildQuery: function (args) {
+		if (!args || typeof(args) != "object") {return "";}
+		var ret = "";var v;
+		for(var n in args) {
+			v = args[n];
+			if (v === null || v === undefined) {continue;}
+			if (typeof(v) == "object" || Array.isArray(v)) {v = JSON.stringify(v);}
+			if (typeof(v) == "number") {v = String(v);}
+			if (typeof(v) == "boolean") {if (v === true) {v = "1";} else {v = "0";}}
+			v = encodeURIComponent(v);
+			if (ret != "") {ret += "&";}
+			ret += n + "=" + v;
+		}
+		return ret;
+	}
 };
