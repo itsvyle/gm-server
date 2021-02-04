@@ -402,7 +402,7 @@ module.exports = {
         repl("{error-text}",text || "");
         return d;
     },
-    simpleRouter: function (req,res) {
+    simpleRouter: function (req,res,clb) {
         var url = req._parsedUrl;
         if (url.pathname.endsWith("/")) {url.pathname += 'index.html';}
         var filename = './public' + url.pathname;
@@ -411,6 +411,9 @@ module.exports = {
         fs.readFile(filename, function(err, data) {
             if (err) {
                 //res.sendStatus(404);
+                if (typeof(clb) === "function") {
+                    return clb(404,par.errorPage(404,"Not Found","","Not Found"));
+                }
                 res.status(404);
                 return res.send(par.errorPage(404,"Not Found","","Not Found"));
             }
@@ -427,6 +430,16 @@ module.exports = {
                 res.set('Content-Type', 'image/png');
             } else if (filename.endsWith('.mp3')) {
                 res.set('Content-Type', 'audio/mp3');
+            }
+            if (typeof(clb) === "function") {
+                try {
+                    data = data.toString();
+                } catch (err) {
+                    req.data = data;
+                    return clb(500,par.errorPage(500,"Error Getting Data",""))
+                }
+                req.data = data;
+                return clb(200,data);
             }
             res.status(200);
             res.send(data);
