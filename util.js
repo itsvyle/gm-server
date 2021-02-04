@@ -349,5 +349,11 @@ module.exports = {
 		});
 	    }
 	    askReadCommand();
-	}
+	},
+	    PromiseError: function (error) {
+        return new Promise(function (reso,rej) {
+            return rej(error);
+        });
+    }
+
 };
