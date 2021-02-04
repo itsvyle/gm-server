@@ -6,7 +6,11 @@ if (!String.prototype.replaceAll) {
 }
 
 const ErrorCodes = {
-    "404": ["Not Found","This page could not be found"]
+    "404": ["Not Found","This page could not be found"],
+    "403": ["Forbidden","You cannot access this page"],
+    "400": ["Bad Request","The request syntax was invalid"],
+    "429": ["Too Many Requests","You sent too many requests to the server in a short amount of time"],
+    "500": ["Internal Server Error","There was an unknown error in fulfilling the request"]
 };
 
 var errorPage = "";
