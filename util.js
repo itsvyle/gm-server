@@ -401,5 +401,35 @@ module.exports = {
         repl("{error-desc}",shortDesc);
         repl("{error-text}",text || "");
         return d;
+    },
+    simpleRouter: function (req,res) {
+        var url = req._parsedUrl;
+        if (url.pathname.endsWith("/")) {url.pathname += 'index.html';}
+        var filename = './public' + url.pathname;
+        //res.set('Cache-Control','no-cache');
+        let par = this;
+        fs.readFile(filename, function(err, data) {
+            if (err) {
+                //res.sendStatus(404);
+                res.status(404);
+                return res.send(par.errorPage(404,"Not Found","","Not Found"));
+            }
+            if (filename.endsWith('.css')) {
+                res.set('Content-Type', 'text/css; charset=UTF-8');
+                res.set('x-content-type-options', 'text/css; charset=UTF-8');
+            } else if (filename.endsWith('.html')) {
+                res.set('Content-Type', 'text/html; charset=UTF-8');
+                res.set('x-content-type-options', 'text/html; charset=UTF-8');
+            } else if (filename.endsWith('.js')) {
+                res.set('Content-Type', 'application/javascript');
+                res.set('x-content-type-options', 'application/javascript');
+            } else if (filename.endsWith('.png')) {
+                res.set('Content-Type', 'image/png');
+            } else if (filename.endsWith('.mp3')) {
+                res.set('Content-Type', 'audio/mp3');
+            }
+            res.status(200);
+            res.send(data);
+        });
     }
 };
