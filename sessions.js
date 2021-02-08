@@ -196,7 +196,7 @@ class Sessions extends EventEmitter {
             }
             if (!o.thread) o.thread = s.thread;
             if (!o.d) o.d = null;
-            console.log(o);
+            // console.log(o);
             par.emit("message",s,o);
             res.send(JSON.stringify({
                 status: 1
