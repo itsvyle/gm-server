@@ -57,6 +57,7 @@ class Sessions extends EventEmitter {
         s.data = data;
         this.sessions.set(id,s);
         this.emit("session_create",s);
+        this.emit("session_ready",s);
         return s;
     }
 
@@ -78,6 +79,7 @@ class Sessions extends EventEmitter {
         s.init(this.session_timeout);
         this.sessions.set(id,s);
         this.emit("session_create",s);
+        this.emit("session_ready",s);
         return s;
     }
 
@@ -196,12 +198,22 @@ class Sessions extends EventEmitter {
             }
             if (!o.thread) o.thread = s.thread;
             if (!o.d) o.d = null;
+            if (o.thread === "_") {
+                if (o.type == "set_data") {
+                    if (!!o.d && typeof(o.d) == "object") {
+                        s.setData(o.d);
+                        par.emit("session_ready",s);
+                    }
+                    return;
+                }
+            }
             // console.log(o);
             par.emit("message",s,o);
             res.send(JSON.stringify({
                 status: 1
             }));
         });
+
         if (ws_ === true) {
             let bd = 'express-ws';
             var expressWs = require(bd)(router);
@@ -242,6 +254,10 @@ class Session {
         });
     }
 
+    setData(d) {
+        this.data = d;
+    }
+
     send(type,d,thread) {
         if (!thread) thread = this.thread;
         this.items.push({
@@ -280,6 +296,11 @@ class WSSession {
             value: sessions
         });
         this.initWS();
+    }
+
+    setData(d) {
+        this.data = d;
+        this.sessions.emit("session_ready",this);
     }
 
     initWS() {
@@ -348,6 +369,13 @@ class WSSession {
         if (m.thread == "_") {
             if (m.type == "ping") {
                 this.tick();
+            } else if (m.thread === "_") {
+                if (m.type == "set_data") {
+                    if (!!m.d && typeof(m.d) == "object") {
+                        this.setData(m.d);
+                    }
+                    return;
+                }
             }
             return;
         }
