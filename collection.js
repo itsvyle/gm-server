@@ -29,6 +29,7 @@ class Collection extends Map {
   }
 
     keysArray() {
+        return [...this.keys()];
         let r = [];
         for (const [key] of this) {
             r.push(key);
