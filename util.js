@@ -411,6 +411,7 @@ module.exports = {
                 shortDesc = e;
             }
         }
+        if (!shortDesc) return null;
         if (!title) title = shortDesc;
         if (!text) text = "";
         if (title.startsWith("raw:") !== true) {
@@ -436,6 +437,15 @@ module.exports = {
         repl("{error-desc}",shortDesc);
         repl("{error-text}",text || "");
         return d;
+    },
+    routeWithError: function (req,res,data,showErrorPage) {
+        if (Array.isArray(data)) {
+            if (!data[0]) data[0] = 0;
+            res.status(data[0]);
+            if (!data[1]) data[1] = "Unknown Error";
+            return res.send((showErrorPage === false) ? data[1] : _errorPage(data[0],null,data[1]));
+        }
+        return data;
     },
     simpleRouter: function (req,res,clb) {
         var url = req._parsedUrl;
@@ -481,3 +491,4 @@ module.exports = {
         });
     }
 };
+var _errorPage = module.exports.errorPage;
