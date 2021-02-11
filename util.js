@@ -72,11 +72,11 @@ function _JSONToXML(key, value) {
 }
 
 
-function JSONParse(text) {
+function JSONParse(text,log) {
 	try {
 		return JSON.parse(text);
 	} catch (err) {
-		console.log(err);
+		if (log) console.log(err);
 		return null;
 	}
 }
