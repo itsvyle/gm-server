@@ -115,7 +115,15 @@ module.exports = {
 	},
 
 	request: function (request, url, opts, clb) {
-		if (typeof (clb) !== "function") clb = () => {};
+        let isPromise = false;
+		if (typeof (clb) !== "function") {
+            isPromise = true;
+            clb = (r) => {
+                return new Promise(function (resolve,reject) {
+                    return (r.status === 1) ? resolve(r) : reject(r);
+                });
+            };
+        }
 		if (!request) return clb({
 			status: 0,
 			error: "Request must be an imported request npm instance"
@@ -160,7 +168,7 @@ module.exports = {
 		request(url, options, function (error, response, body) {
 			var r = {
 				status: null,
-				http_code: response.statusCode,
+				http_code: (!!response) ? response.statusCode : null,
 				res: null,
 				error_level: 0,
 				error: null
@@ -196,6 +204,13 @@ module.exports = {
 			}
 			clb(r);
 		});
+        if (isPromise) {
+            return new Promise(function (resolve,reject) {
+                clb = function (r) {
+                    return (r.status === 1) ? resolve(r) : reject(r);
+                };
+            });
+        }
 	},
 	sortBy: function () {
 		var fields = [].slice.call(arguments),
