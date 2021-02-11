@@ -256,6 +256,17 @@ module.exports = {
 			.replace(/"/g, "&quot;")
 			.replace(/'/g, "&#039;");
 	},
+    formatNumber: function (n) {
+		if (typeof (n) != "number") {
+			return null;
+		}
+        return String(n).replace(/(.)(?=(\d{3})+$)/g,'$1,');
+        return n.toLocaleString(
+        undefined, // leave undefined to use the browser's locale,
+                    // or use a string like 'en-US' to override it.
+        { minimumFractionDigits: 0 }
+        );
+	},
 	formatTime: function (milliseconds) {
 		if (typeof (milliseconds) != "number") {
 			return milliseconds;
