@@ -168,6 +168,10 @@ class Collection extends Map {
         return r;
     }
 
+    sortArray(fn,thisArg) {
+        return this.sort(fn.thisArg).array();
+    }
+
     static withUpdate(clb) {
         return new CollectionWithUpdates(null,clb);
     }
