@@ -28,6 +28,14 @@ class Collection extends Map {
 
   }
 
+    keysArray() {
+        let r = [];
+        for (const [key] of this) {
+            r.push(key);
+        }
+        return r;
+    }
+
     // get(key) {
     //     console.log("Getting: " + key);
     //     return super.get(key);
