@@ -445,7 +445,7 @@ module.exports = {
             if (!data[1]) data[1] = "Unknown Error";
             return res.send((showErrorPage === false) ? data[1] : _errorPage(data[0],null,data[1]));
         }
-        return data;
+        return res.send(data);
     },
     simpleRouter: function (req,res,clb) {
         var url = req._parsedUrl;
