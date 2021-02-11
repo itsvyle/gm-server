@@ -173,7 +173,6 @@ module.exports = {
 				error_level: 0,
 				error: null
 			};
-			r.headers = response.headers;
 
 			if (error) {
 				return clb({
@@ -182,6 +181,7 @@ module.exports = {
 					error: "Error making request: " + error
 				});
 			}
+            r.headers = (!!response) ? response.headers : null;
 
 			if (opts.accept_codes.includes(response.statusCode) === false) {
 				r.status = 0;
