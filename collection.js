@@ -37,6 +37,38 @@ class Collection extends Map {
         return r;
     }
 
+    clone() {
+        return new this.constructor[Symbol.species](this);
+    }
+
+    concat(...collections) {
+        const newColl = this.clone();
+        for (const coll of collections) {
+            for (const [key, val] of coll)
+                newColl.set(key, val);
+        }
+        return newColl;
+    }
+
+    some(fn, thisArg) {
+        if (typeof thisArg !== 'undefined')
+            fn = fn.bind(thisArg);
+        for (const [key, val] of this) {
+            if (fn(val, key, this))
+                return true;
+        }
+        return false;
+    }
+    every(fn, thisArg) {
+        if (typeof thisArg !== 'undefined')
+            fn = fn.bind(thisArg);
+        for (const [key, val] of this) {
+            if (!fn(val, key, this))
+                return false;
+        }
+        return true;
+    }
+
     // get(key) {
     //     console.log("Getting: " + key);
     //     return super.get(key);
@@ -65,6 +97,28 @@ class Collection extends Map {
     }
     first() {
         return this.values().next().value;
+    }
+
+    last(amount) {
+        const arr = this.array();
+        if (typeof amount === 'undefined')
+            return arr[arr.length - 1];
+        if (amount < 0)
+            return this.first(amount * -1);
+        if (!amount)
+            return [];
+        return arr.slice(-amount);
+    }
+
+    lastKey(amount) {
+        const arr = this.keyArray();
+        if (typeof amount === 'undefined')
+            return arr[arr.length - 1];
+        if (amount < 0)
+            return this.firstKey(amount * -1);
+        if (!amount)
+            return [];
+        return arr.slice(-amount);
     }
     
     item(index) {
@@ -101,6 +155,17 @@ class Collection extends Map {
         var ret = {};
         this.forEach((v,k,m) => {ret[k] = (p == true) ? primer(v,k) : v;});
         return ret;
+    }
+
+    sort(fn = ((x, y) => Number(x > y) || Number(x === y) - 1),thisArg) {
+        if (thisArg) fn = fn.bind(thisArg);
+        const entries = [...this.entries()];
+        entries.sort((a, b) => fn(a[1], b[1], a[0], b[0]));
+        let r = new this.constructor[Symbol.species]();
+        for (const [k, v] of entries) {
+            r.set(k, v);
+        }
+        return r;
     }
 
     static withUpdate(clb) {
