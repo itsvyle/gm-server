@@ -169,7 +169,7 @@ class Collection extends Map {
     }
 
     sortArray(fn,thisArg) {
-        return this.sort(fn.thisArg).array();
+        return this.sort(fn,thisArg).array();
     }
 
     static withUpdate(clb) {
