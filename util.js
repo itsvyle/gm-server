@@ -17,7 +17,7 @@ var errorPage = "";
 
 const nl = `
 `;
-var escaping = {
+var XMLescaping = {
 	attribute: function (str) {
 		return str.replaceAll('<', "&lt;").replaceAll('&', "&amp;").replaceAll('"', "&quot;").replaceAll("'", "&apos;");
 	},
@@ -53,7 +53,7 @@ function _JSONToXML(key, value) {
 				continue;
 			}
 			if (typeof (v) == "string" || typeof (v) == "number") {
-				r += `${k}="${escaping.attribute(String(v))}" `;
+				r += `${k}="${XMLescaping.attribute(String(v))}" `;
 			} else if (Array.isArray(v)) {
 				inner += nl + _JSONToXML(k, v);
 			} else if (typeof (v) == "object") {
@@ -65,7 +65,7 @@ function _JSONToXML(key, value) {
 			value = (value === true) ? 1 : 0;
 		}
 		if (typeof (value) == "string" || typeof (value) == "number") {
-			inner = escaping.content(value);
+			inner = XMLescaping.content(value);
 		}
 	}
 	return r.trim() + ">" + inner + `</${key}>` + nl;
