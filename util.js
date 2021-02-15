@@ -509,7 +509,7 @@ module.exports = {
     firstUpper: function (str) {
         if (typeof(str) !== "string") return null;
         if (str.length < 1) return str.toUpperCase();
-        return str[0].toUpperCase() + str.slice(1);
+        return str[0].toUpperCase() + str.slice(1).toLowerCase();
     },
     readFile: function (path,string) {
         return new Promise(function (resolve,reject) {
