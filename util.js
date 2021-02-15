@@ -500,6 +500,10 @@ module.exports = {
             res.status(200);
             res.send(data);
         });
+    },
+    removeAccents: function (str) {
+        if (typeof(str) !== "string") return null;
+        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     }
 };
 var _errorPage = module.exports.errorPage;
