@@ -510,6 +510,13 @@ module.exports = {
         if (typeof(str) !== "string") return null;
         if (str.length < 1) return str.toUpperCase();
         return str[0].toUpperCase() + str.slice(1);
+    },
+    readFile: function (path) {
+        return new Promise(function (resolve,reject) {
+            fs.readFile(path,function (err,data) {
+                return (!!err) ? reject(err) : resolve(data);
+            });
+        });
     }
 };
 var _errorPage = module.exports.errorPage;
