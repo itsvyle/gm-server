@@ -15,8 +15,6 @@ const ErrorCodes = {
 
 var errorPage = "";
 
-const nl = `
-`;
 var XMLescaping = {
 	attribute: function (str) {
 		return str.replaceAll('<', "&lt;").replaceAll('&', "&amp;").replaceAll('"', "&quot;").replaceAll("'", "&apos;");
@@ -31,12 +29,15 @@ function JSONToXML(json) {
 }
 
 function _JSONToXML(key, value) {
+var nl = `
+`;
 	var r = `<${key} `;
 	var inner = "";
 	if (!typeof (value)) {
 		return "";
 	}
 	if (Array.isArray(value)) {
+        r += `__type="${XMLescaping.attribute("array")}" `;
 		for (let item of value) {
 			inner += _JSONToXML("item", item);
 		}
