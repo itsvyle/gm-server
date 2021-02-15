@@ -511,10 +511,18 @@ module.exports = {
         if (str.length < 1) return str.toUpperCase();
         return str[0].toUpperCase() + str.slice(1);
     },
-    readFile: function (path) {
+    readFile: function (path,string) {
         return new Promise(function (resolve,reject) {
             fs.readFile(path,function (err,data) {
-                return (!!err) ? reject(err) : resolve(data);
+                if (err) return reject(err);
+                if (string) {
+                    try {
+                        data = data.toString();
+                    } catch (err) {
+                        return reject(err);
+                    }
+                }
+                return resolve(data);
             });
         });
     }
