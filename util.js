@@ -322,6 +322,7 @@ module.exports = {
 	express: function ({
 		port,
 		post,
+        ws,
 		express
 	}) {
         let bd = "express";
@@ -341,6 +342,10 @@ module.exports = {
 				extended: true
 			}));
 		}
+        if (ws === true) {
+            let bd = "express-ws";
+            app.expressWs = require(bd)(app);
+        }
 		app.connect = function (clb) {
 			if (clb === true) clb = () => {
 				console.log("App listening at port: " + port);
