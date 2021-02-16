@@ -531,11 +531,13 @@ module.exports = {
             });
         });
     },
-    parseWSMessage: function (event,clb) {
-        if (!event.data) return false;
-        let m = JSONParse(event.data);
-        if (m === null) return false;
-        return clb(m);
+    parseWSMessage: function (clb) {
+        return function (event) {
+            if (!event.data) return false;
+            let m = JSONParse(event.data);
+            if (m === null) return false;
+            return clb(m);
+        };
     }
 };
 var _errorPage = module.exports.errorPage;
