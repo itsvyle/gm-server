@@ -16,6 +16,10 @@ var genID = function (length) {
 class Collection extends Map {
   constructor(iterable) {
     super(iterable);
+    /**
+     * Whether or not a new key can be created if of item was deleted
+     * @type {boolean}
+     */
         Object.defineProperty(this, 'noDuplicateID', {
             value: false,
             writable: true
@@ -27,7 +31,10 @@ class Collection extends Map {
         });
 
   }
-
+    /**
+     * The collection keys as an array
+     * @returns {Array<string>}
+     */
     keysArray() {
         return [...this.keys()];
         let r = [];
@@ -37,10 +44,17 @@ class Collection extends Map {
         return r;
     }
 
+    /**
+     * Clones the collection
+     * @returns {Collection}
+     */
     clone() {
         return new this.constructor[Symbol.species](this);
     }
-
+    /**
+     * Concats many collections
+     * @returns {Collection}
+     */
     concat(...collections) {
         const newColl = this.clone();
         for (const coll of collections) {
@@ -50,6 +64,10 @@ class Collection extends Map {
         return newColl;
     }
 
+    /**
+     * Identical to Array.some
+     * @returns {boolean}
+     */
     some(fn, thisArg) {
         if (typeof thisArg !== 'undefined')
             fn = fn.bind(thisArg);
@@ -59,6 +77,10 @@ class Collection extends Map {
         }
         return false;
     }
+    /**
+     * Identical to Array.every
+     * @returns {boolean}
+     */
     every(fn, thisArg) {
         if (typeof thisArg !== 'undefined')
             fn = fn.bind(thisArg);
@@ -91,14 +113,29 @@ class Collection extends Map {
         }
         return results;
     }
-
+    
+    /**
+     * Returns all the values as an Array
+     * @returns {Array}
+     */
     array() {
         return [...this.values()];
     }
+
+    /**
+     * Returns first element
+     */
     first() {
         return this.values().next().value;
     }
 
+    /**
+	 * Obtains the last value(s) in this collection. This relies on {@link Collection#array}, and thus the caching
+	 * mechanism applies here as well.
+	 * @param {number} [amount] Amount of values to obtain from the end
+	 * @returns {*|Array<*>} A single value if no amount is provided or an array of values, starting from the start if
+	 * amount is negative
+	 */
     last(amount) {
         const arr = this.array();
         if (typeof amount === 'undefined')
@@ -126,6 +163,10 @@ class Collection extends Map {
         return this.array()[index];
     }
     
+    /**
+     * Creates a new random item key
+     * @returns {string} A new key
+     */
     createKey() {
         let key = genID(5);
         while(this.has(key) == true || (this.noDuplicateID === true && this.randomIDS.includes(key) === true)) {
