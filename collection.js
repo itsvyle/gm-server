@@ -1,6 +1,4 @@
-var Collection;
-(function () {
-    var genID = function (length) {
+var genID = function (length) {
     var result = '';
     var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     var charactersLength = characters.length;
@@ -213,5 +211,5 @@ class Collection extends Map {
         return new CollectionWithUpdates(null,clb);
     }
 }
-window.Collection = Collection;
-})();
+
+module.exports = Collection;
