@@ -4,6 +4,26 @@ if (!String.prototype.replaceAll) {
 		return this.split(search).join(replace);
 	};
 }
+function componentToHex(c) {
+  var hex = c.toString(16);
+  return hex.length == 1 ? "0" + hex : hex;
+}
+
+const readFile = function (path,string) {
+    return new Promise(function (resolve,reject) {
+        fs.readFile(path,function (err,data) {
+            if (err) return reject(err);
+            if (string) {
+                try {
+                    data = data.toString();
+                } catch (err) {
+                    return reject(err);
+                }
+            }
+            return resolve(data);
+        });
+    });
+};
 
 const ErrorCodes = {
     "404": ["Not Found","This page could not be found"],
@@ -516,21 +536,7 @@ module.exports = {
         if (str.length < 1) return str.toUpperCase();
         return str[0].toUpperCase() + str.slice(1).toLowerCase();
     },
-    readFile: function (path,string) {
-        return new Promise(function (resolve,reject) {
-            fs.readFile(path,function (err,data) {
-                if (err) return reject(err);
-                if (string) {
-                    try {
-                        data = data.toString();
-                    } catch (err) {
-                        return reject(err);
-                    }
-                }
-                return resolve(data);
-            });
-        });
-    },
+    readFile: readFile,
     parseWSMessage: function (clb) {
         return function (event) {
             if (!event.data) return false;
@@ -538,6 +544,9 @@ module.exports = {
             if (m === null) return false;
             return clb(m);
         };
+    },
+    rgbToHex: function (r,g,b) {
+        return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
     }
 };
 var _errorPage = module.exports.errorPage;
