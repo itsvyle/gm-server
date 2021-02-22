@@ -190,6 +190,7 @@ module.exports = {
 			var r = {
 				status: null,
 				http_code: (!!response) ? response.statusCode : null,
+                url: url,
 				res: null,
 				error_level: 0,
 				error: null
