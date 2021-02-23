@@ -291,7 +291,7 @@ function save(confirmed) {
     document.getElementById("save_button").disabled = true;
     var t = toSave();
     t = JSON.stringify(t);
-    gm.request("/",{
+    gm.request("",{
         method: "POST",
         body: t,
         headers: {
