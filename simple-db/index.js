@@ -286,7 +286,7 @@ class SimpleDB {
         return h;
     }
 
-    UI() {
+    UI(path = "./") {
         return new Promise((resolve,reject) => {
             if (!baseUI) {
                 Util.readFile(__dirname + "/index.html",true).then((d) => {
@@ -302,6 +302,7 @@ class SimpleDB {
                 };
 
                 html = html.replace("{base}",JSON.stringify(base));
+                html = html.split("{path}").join(path);
                 html = html.replace("{headers}",headers);
                 html = html.replace("{items}",this.UIItems());
                 html = html.replace("{keys}",this.UIKeys());
@@ -375,7 +376,9 @@ class SimpleDB {
         let router = express.Router();
         let par = this;
         router.get("/",function (req,res) {
-            par.UI().then((d) => {res.send(d);}).catch(function (e) {
+            let p = req.originalUrl;
+            if (!p.endsWith("/")) p += "/";
+            par.UI(p).then((d) => {res.send(d);}).catch(function (e) {
                 console.error(e);
                 res.status(500);
                 return res.send(Util.errorPage(500,null,e));
