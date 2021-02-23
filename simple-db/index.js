@@ -48,6 +48,7 @@ class SimpleDB {
      */
     constructor(fields,replToken,dbEntry = "simple_db",keyNames = []) {
         if (typeof(dbEntry) !== "string") dbEntry = "simple_db";
+        if (!Array.isArray(fields)) fields = [];
         this.fields = [];
         this.keyNames = [];
         if (!Array.isArray(keyNames)) keyNames = [];
@@ -207,6 +208,9 @@ class SimpleDB {
     }
 
     UIHeaders() {
+        if (this.fields.length < 1) {
+            return '<tr><th style="text-align: center;">No fields are registered</th></tr>'
+        }
         let html = ``;
         for(let f of this.fields) {
             if (f.stretch === false) {
@@ -263,6 +267,9 @@ class SimpleDB {
     }
 
     UIItems() {
+        if (this.fields.length < 1) {
+            return '';
+        }
         let h = '';
         for(let v of this.data) {
             h += this.UIItemRow(v);
