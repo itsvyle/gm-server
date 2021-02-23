@@ -291,7 +291,7 @@ class SimpleDB {
             if (!baseUI) {
                 Util.readFile(__dirname + "/index.html",true).then((d) => {
                     baseUI = d;
-                    this.UI().then(resolve).catch(reject);
+                    this.UI(path).then(resolve).catch(reject);
                 }).catch(reject);
             } else {
                 let html = baseUI;
