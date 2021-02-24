@@ -4,7 +4,7 @@ function onload() {
     base = gm.base();
     field_names = base.fields.map(function (f) {return f.name;});
     //key_names = base.keyNames.map(function (f) {return f.name;});
-
+    if (base.fields.length < 1) {document.getElementById("add_button").setAttribute("style","display: none;");}
     firstSave = toSave();
     refresh();
 }
