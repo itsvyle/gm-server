@@ -304,6 +304,7 @@ class SimpleDB {
                 html = html.replace("{headers}",headers);
                 html = html.replace("{items}",this.UIItems());
                 html = html.replace("{keys}",this.UIKeys());
+                html = html.replace("{keys-style}",(this.keyNames.length > 0) ? "" : "display: none;");
                 html = html.split("{title}").join((this.dbEntry === "simple_db") ? "" : " - " + this.dbEntry);
 
                 return resolve(html);
