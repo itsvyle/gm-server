@@ -382,6 +382,9 @@ module.exports = {
 				clb();
 			});
 		};
+        Object.defineProperty(app,"express",{
+            get() {return express;}
+        });
 		return app;
 	},
 	parseCookies: function (rc) {
