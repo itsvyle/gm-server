@@ -64,10 +64,6 @@ class SimpleDB {
         }
 
         
-
-        if (!this.fields.length) {
-            throw "Must provide fields for SimpleDB"
-        }
         Object.defineProperty(this,"saveTimer",{writable: true,value: null});
         Object.defineProperty(this,"last_save",{writable: true,value: null});
         Object.defineProperty(this,"db",{writable: true,value: null});
@@ -105,6 +101,8 @@ class SimpleDB {
          */
         this.data = [];
 
+        this.onKeyEdit = null;
+        this.onDataEdit = null;
     }
 
     toSave() {
@@ -231,9 +229,9 @@ class SimpleDB {
             let h = '';
             for(let v of f.values) {
                 if (typeof(v) == "object") {
-                    h += `<option value="${v.value}">${v.label}</option>`;
+                    h += `<option value="${v.value}"${(v.value === value) ? " selected" : ""}>${v.label}</option>`;
                 } else {
-                    h += `<option value="${v}">${v}</option>`;
+                    h += `<option value="${v}"${(v === value) ? " selected" : ""}>${v}</option>`;
                 }
             }
             return `<select onchange="refresh();" ${cl} value=${value}>${h}</select>` + e;
@@ -329,15 +327,33 @@ class SimpleDB {
         let par = this;
         if (!Array.isArray(d)) return false;
         d = d.filter(da => this.validateValue(da)).map(da => this.treatData(da));
-        this.data = d;
-        this.map_ = null;
+        if (this.onDataEdit) {
+            let o = this.data;
+            this.data = d;
+            if (!Util.deepEqual(o,this.data)) {
+                if (this.onDataEdit() === false) {this.data = o;} else {this.map_ = null;}
+            }
+        } else {
+            this.data = d;
+            this.map_ = null;
+        }
         return true;
     }
 
     setKeys(d) {
         if (d === null || typeof(d) !== "object") return false;
-        this.keys = d;
-        this.refreshKeys();
+        if (this.onKeyEdit) {
+            let o = this.keys;
+            this.keys = d;
+            this.refreshKeys();
+            if (!Util.deepEqual(o,this.keys)) {
+                if (this.onKeyEdit() === false) this.keys = o;
+                this.refreshKeys();
+            }
+        } else {
+            this.keys = d;
+            this.refreshKeys();
+        }
         return true;
     }
 
