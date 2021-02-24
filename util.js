@@ -385,6 +385,7 @@ module.exports = {
         Object.defineProperty(app,"express",{
             get() {return express;}
         });
+        app.port = port;
 		return app;
 	},
 	parseCookies: function (rc) {
