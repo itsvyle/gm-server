@@ -255,8 +255,8 @@ class SimpleDB {
             }
         }
         return h + `<td style="width: 1px;"><button class="delete-button" type="button" onclick="deleteRow(this);">Delete</button></td><td style="width: 1px;">
-                <button type="button" class="arrow-button" onclick="swapUp(getVideoRow(this));">&uArr;</button>
-                <button type="button" class="arrow-button" onclick="swapDown(getVideoRow(this));">&dArr;</button>
+                <button type="button" class="arrow-button" onclick="swapUp(getRow(this));">&uArr;</button>
+                <button type="button" class="arrow-button" onclick="swapDown(getRow(this));">&dArr;</button>
             </td>` + "</tr>";
     }
 
