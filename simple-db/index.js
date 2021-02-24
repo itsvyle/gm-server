@@ -305,7 +305,7 @@ class SimpleDB {
                 html = html.replace("{items}",this.UIItems());
                 html = html.replace("{keys}",this.UIKeys());
                 html = html.replace("{keys-style}",(this.keyNames.length > 0) ? "" : "display: none;");
-                html = html.split("{title}").join((this.dbEntry === "simple_db") ? "" : " - " + this.dbEntry);
+                html = html.split("{title}").join((this.dbEntry === "simple_db") ? "" : " - " + Util.firstUpper(this.dbEntry));
 
                 return resolve(html);
             }
@@ -416,6 +416,28 @@ class SimpleDB {
         });
 
         return router;
+    }
+
+    /**
+     * Starts multiple dbs and callbacks when done
+     * @param {boolean} consoleLog
+     * @returns {Promise}
+     */
+    static startMultiple(consoleLog = false,...dbs) {
+        return new Promise((resolve,reject) => {
+            if (!dbs.length) return resolve();
+            let ended = {}, check = function () {if(Object.values(ended).includes(false) === false) {return resolve();}};
+            for(let i_ = 0;i_ < dbs.length;i_++) {ended[i_] = false;}
+            for(let ind = 0;ind < dbs.length;ind++) {
+                let i = ind;
+                let d = dbs[i];
+                d.start(function () {
+                    if (consoleLog) console.log(`[SimpleDB,${d.dbEntry}] Loaded data and keys`);
+                    ended[i] = true;
+                    check();
+                });
+            }
+        });
     }
 
 }
