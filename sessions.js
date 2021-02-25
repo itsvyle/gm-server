@@ -48,12 +48,14 @@ class Sessions extends EventEmitter {
         this.emit("session_close",s);
     }
 
-    createSession(thread,data) {
+    createSession(thread,data,user) {
+        if (!user) user = null;
         if (!data || typeof(data) !== "object") data = {};
         delete data.thread;
         let id = this.sessions.createKey();
         
-        let s = new Session(thread,id);
+        let s = new Session(thread,id,this);
+        s.user = user;
         s.data = data;
         this.sessions.set(id,s);
         this.emit("session_create",s);
@@ -61,7 +63,8 @@ class Sessions extends EventEmitter {
         return s;
     }
 
-    createWSSession(ws,thread,data) {
+    createWSSession(ws,thread,data,user) {
+        if (!user) user = null;
         if (!data || typeof(data) !== "object") data = {};
         delete data["thread"];
         var enc = "json";
@@ -76,6 +79,7 @@ class Sessions extends EventEmitter {
         let s = new WSSession(this,ws,thread,id);
         s.data = data;
         s.encoding = enc;
+        s.user = user;
         s.init(this.session_timeout);
         this.sessions.set(id,s);
         this.emit("session_create",s);
@@ -117,7 +121,7 @@ class Sessions extends EventEmitter {
                 if (n === "thread") continue;
                 da[n] = req.query[n];
             }
-            let s = par.createSession(req.query.thread,da);
+            let s = par.createSession(req.query.thread,da,req.user);
             res.set("content-type",'text/json');
             res.send(JSON.stringify({
                 status: 1,
@@ -235,23 +239,30 @@ class Sessions extends EventEmitter {
             if (n === "thread") continue;
             da[n] = req.query[n];
         }
-        let s = par.createWSSession(ws,req.query.thread,da);
+        let s = par.createWSSession(ws,req.query.thread,da,req.user);
     }
 
 }
 
 class Session {
-    constructor(thread,id) {
+    constructor(thread,id,sessions) {
+        Object.defineProperty(this,"sessions",{value: sessions});
         this.id = id;
         this.thread = thread;
         this.type = "normal";
         this.last_tick = Date.now();
+
+        this.user = null;
 
         this.data = {};
         Object.defineProperty(this, 'items', {
             value: [],
             writable: true
         });
+    }
+
+    close(reason) {
+        return this.sessions.close(this.id,reason);
     }
 
     setData(d) {
@@ -286,6 +297,8 @@ class WSSession {
         this.type = "ws";
         this.last_tick = Date.now();
 
+        this.user = null;
+
         this.data = {};
         this.encoding = "json";
         Object.defineProperty(this, 'ws', {
@@ -296,6 +309,10 @@ class WSSession {
             value: sessions
         });
         this.initWS();
+    }
+
+    close(reason) {
+        return this.sessions.close(this.id,reason);
     }
 
     setData(d) {
