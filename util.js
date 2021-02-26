@@ -135,7 +135,7 @@ module.exports = {
 		return cl(obj_);
 	},
 
-	request: function (request, url, opts, clb) {
+	request: function (requestOBJ, url, opts, clb) {
         let isPromise = false;
 		if (typeof (clb) !== "function") {
             isPromise = true;
