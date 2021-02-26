@@ -495,11 +495,12 @@ module.exports = {
         }
         return res.send(data);
     },
-    simpleRouter: function (req,res,clb) {
+    simpleRouter: function (req,res,base_path,clb) {
         if (!base_path) base_path = "./public";
         var url = req._parsedUrl;
         if (url.pathname.endsWith("/")) {url.pathname += 'index.html';}
         var filename = base_path + url.pathname;
+	    const isFunc = (typeof(clb) === "function");
         //res.set('Cache-Control','no-cache');
         let par = this;
         fs.readFile(filename, function(err, data) {
@@ -525,7 +526,7 @@ module.exports = {
             } else if (filename.endsWith('.mp3')) {
                 res.set('Content-Type', 'audio/mp3');
             }
-            if (typeof(clb) === "function") {
+            if (isFunc) {
                 try {
                     data = data.toString();
                 } catch (err) {
@@ -536,7 +537,7 @@ module.exports = {
                 return clb(200,data);
             }
             res.status(200);
-            res.send(data);
+		return res.send(data);
         });
     },
     removeAccents: function (str) {
