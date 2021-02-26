@@ -145,9 +145,9 @@ module.exports = {
                 });
             };
         }
-		if (!request) return clb({
+		if (!requestOBJ) return clb({
 			status: 0,
-			error: "Request must be an imported request npm instance"
+			error: "requestOBJ must be an imported request npm instance"
 		});
 		if (!opts || typeof (opts) !== "object") opts = {};
 
@@ -186,7 +186,7 @@ module.exports = {
 		if (!!opts.extra_attributes && typeof (opts.extra_attributes) == "object") {
 			options = Object.assign(options, opts.extra_attributes);
 		}
-		request(url, options, function (error, response, body) {
+		requestOBJ(url, options, function (error, response, body) {
 			var r = {
 				status: null,
 				http_code: (!!response) ? response.statusCode : null,
