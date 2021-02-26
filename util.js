@@ -496,9 +496,10 @@ module.exports = {
         return res.send(data);
     },
     simpleRouter: function (req,res,clb) {
+        if (!base_path) base_path = "./public";
         var url = req._parsedUrl;
         if (url.pathname.endsWith("/")) {url.pathname += 'index.html';}
-        var filename = './public' + url.pathname;
+        var filename = base_path + url.pathname;
         //res.set('Cache-Control','no-cache');
         let par = this;
         fs.readFile(filename, function(err, data) {
