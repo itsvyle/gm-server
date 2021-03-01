@@ -9,6 +9,15 @@ function componentToHex(c) {
   return hex.length == 1 ? "0" + hex : hex;
 }
 
+var escapeHTML = function (str) {
+		return str
+			.replace(/&/g, "&amp;")
+			.replace(/</g, "&lt;")
+			.replace(/>/g, "&gt;")
+			.replace(/"/g, "&quot;")
+			.replace(/'/g, "&#039;");
+	};
+
 const readFile = function (path,string) {
     return new Promise(function (resolve,reject) {
         fs.readFile(path,function (err,data) {
@@ -270,14 +279,7 @@ module.exports = {
 			return result;
 		};
 	},
-	escapeHTML: function (str) {
-		return str
-			.replace(/&/g, "&amp;")
-			.replace(/</g, "&lt;")
-			.replace(/>/g, "&gt;")
-			.replace(/"/g, "&quot;")
-			.replace(/'/g, "&#039;");
-	},
+	escapeHTML,
     formatNumber: function (n) {
 		if (typeof (n) != "number") {
 			return null;
@@ -462,6 +464,9 @@ module.exports = {
         if (!shortDesc) return null;
         if (!title) title = shortDesc;
         if (!text) text = "";
+        if (typeof(text) === "object" && text !== null) {
+            try {text = "<pre>" + escapeHTML(JSON.stringify(text,null,2)) + "</pre>";} catch (err) {}
+        }
         if (title.startsWith("raw:") !== true) {
             title = String(code) + " - " + title;
         } else {
