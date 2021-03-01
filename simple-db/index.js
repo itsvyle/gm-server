@@ -167,7 +167,7 @@ class SimpleDB {
                 if (typeof(r.keys) !== "object") r.keys = {};
                 this.keys = r.keys;
 
-                this.last_save = this.toSave();
+                this.saved();
                 this.refreshKeys();
                 this.map_ = null;
                 return resolve(this);
@@ -194,15 +194,27 @@ class SimpleDB {
     }
 
     toSaveIfNeed() {
-        let par = this,d = this.toSave();
+        let d = this.toSave();
         if (Util.deepEqual(this.last_save,d) === true) return null;
         return d;
+    }
+
+    saved(t) {
+        if (!t) t = this.toSave();
+        this.last_save = {
+            keys: Object.assign({},t.keys),
+            data: t.data.map(d => d)
+        };
+        //d => Object.assign({},d))
     }
 
     save(force) {
         let par = this,d = (force === true) ? this.toSave() : this.toSaveIfNeed();
         if (!d) return;
-        return this.db.set(this.dbEntry,d).then(() => {par.map_ = null;par.last_save = d;});
+        return this.db.set(this.dbEntry,d).then(() => {
+            par.map_ = null;
+            par.saved();
+        });
     }
 
     UIHeaders() {
