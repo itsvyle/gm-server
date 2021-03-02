@@ -92,9 +92,18 @@ class Sessions extends EventEmitter {
         return this.sessions.get(id).get();
     }
 
-    send(thread,type,d) {
+    /**
+     * Send a message to all the sessions with a correct thread
+     * @param {string} thread
+     * @param {string} type
+     * @param {any} [d=null]
+     * @params {Function} [fn=null] A filter function for sessions. Optionnal
+     */
+    send(thread,type,d,fn = null) {
+        if (typeof(fn) !== "function") fn = null;
         this.sessions.forEach((s) => {
             if (s.thread !== thread) return;
+            if (fn && !fn(s)) return;
             s.send(type,d);
         });
     }
