@@ -565,6 +565,9 @@ module.exports = {
     },
     rgbToHex: function (r,g,b) {
         return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+    },
+    isRepl: function () {
+        return (!!process.env.REPL_SLUG);
     }
 };
 var _errorPage = module.exports.errorPage;
