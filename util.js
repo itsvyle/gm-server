@@ -89,6 +89,16 @@ var errorPage = function (code,shortDesc,text,title) {
 };
 Object.defineProperty(errorPage,"page",{value: null,writable: true});
 
+errorPage.setStyle = function (s) {
+    if (!errorPage.page) {
+        return readFile(__dirname + "/errorPage.html",true).then((d) => {
+            errorPage.page = d;
+            return errorPage.setStyle(s);
+        }).catch(console.error);
+    }
+    errorPage.page = errorPage.page.replace(new RegExp("<style>[\\d\\D]*?\/style>", "g"), '<style>' + s + '</style>');
+};
+
 var XMLescaping = {
 	attribute: function (str) {
 		return str.replaceAll('<', "&lt;").replaceAll('&', "&amp;").replaceAll('"', "&quot;").replaceAll("'", "&apos;");
