@@ -42,7 +42,52 @@ const ErrorCodes = {
     "500": ["Internal Server Error","There was an unknown error in fulfilling the request"]
 };
 
-var errorPage = "";
+var errorPage = function (code,shortDesc,text,title) {
+    if (!code) {return "Missing code argument in errorPage";}
+    if (!shortDesc) {
+        if (!(String(code) in ErrorCodes)) {return "Invalid 'shortDesc'";}
+        let e = ErrorCodes[String(code)];
+        if (Array.isArray(e)) {
+            shortDesc = e[0];
+            if (!text) {text = e[1];}
+            if (e.length > 2) {
+                if (!title) {title = e[2];}
+            }
+        } else {
+            shortDesc = e;
+        }
+    }
+    if (!shortDesc) return null;
+    if (!title) title = shortDesc;
+    if (!text) text = "";
+    if (typeof(text) === "object" && text !== null) {
+        try {text = "<pre>" + escapeHTML(JSON.stringify(text,null,2)) + "</pre>";} catch (err) {}
+    }
+    if (title.startsWith("raw:") !== true) {
+        title = String(code) + " - " + title;
+    } else {
+        title = title.slice("raw:".length);
+    }
+
+    if (!errorPage.page) {
+        try {
+            errorPage.page = fs.readFileSync(__dirname + "/errorPage.html");
+            //console.log(errorPage.toString());
+            errorPage.page = errorPage.page.toString();
+        } catch (err) {
+            return "Error getting error page";
+        }
+    }
+    if (!errorPage.page) return "Error getting page";
+    let d = errorPage.page;
+    let repl = function (a,b) {d = d.split(a).join(b);};
+    repl("{page-title}",title);
+    repl("{error-code}",code);
+    repl("{error-desc}",shortDesc);
+    repl("{error-text}",text || "");
+    return d;
+};
+Object.defineProperty(errorPage,"page",{value: null,writable: true});
 
 var XMLescaping = {
 	attribute: function (str) {
@@ -446,57 +491,13 @@ module.exports = {
 		}
 		return ret;
 	},
-    errorPage: function (code,shortDesc,text,title) {
-        if (!code) {return "Missing code argument in errorPage";}
-        if (!shortDesc) {
-            if (!(String(code) in ErrorCodes)) {return "Invalid 'shortDesc'";}
-            let e = ErrorCodes[String(code)];
-            if (Array.isArray(e)) {
-                shortDesc = e[0];
-                if (!text) {text = e[1];}
-                if (e.length > 2) {
-                    if (!title) {title = e[2];}
-                }
-            } else {
-                shortDesc = e;
-            }
-        }
-        if (!shortDesc) return null;
-        if (!title) title = shortDesc;
-        if (!text) text = "";
-        if (typeof(text) === "object" && text !== null) {
-            try {text = "<pre>" + escapeHTML(JSON.stringify(text,null,2)) + "</pre>";} catch (err) {}
-        }
-        if (title.startsWith("raw:") !== true) {
-            title = String(code) + " - " + title;
-        } else {
-            title = title.slice("raw:".length);
-        }
-
-        if (!errorPage) {
-            try {
-                errorPage = fs.readFileSync(__dirname + "/errorPage.html");
-                //console.log(errorPage.toString());
-                errorPage = errorPage.toString();
-            } catch (err) {
-                return "Error getting error page";
-            }
-        }
-        if (!errorPage) return "Error getting page";
-        let d = errorPage;
-        let repl = function (a,b) {d = d.split(a).join(b);};
-        repl("{page-title}",title);
-        repl("{error-code}",code);
-        repl("{error-desc}",shortDesc);
-        repl("{error-text}",text || "");
-        return d;
-    },
+    errorPage: errorPage,
     routeWithError: function (req,res,data,showErrorPage) {
         if (Array.isArray(data)) {
             if (!data[0]) data[0] = 0;
             res.status(data[0]);
             if (!data[1]) data[1] = "Unknown Error";
-            return res.send((showErrorPage === false) ? data[1] : _errorPage(data[0],null,data[1]));
+            return res.send((showErrorPage === false) ? data[1] : errorPage(data[0],null,data[1]));
         }
         return res.send(data);
     },
@@ -570,4 +571,3 @@ module.exports = {
         return (!!process.env.REPL_SLUG);
     }
 };
-var _errorPage = module.exports.errorPage;
