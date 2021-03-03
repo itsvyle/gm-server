@@ -203,9 +203,9 @@ class SimpleDB {
         if (!t) t = this.toSave();
         this.last_save = {
             keys: Object.assign({},t.keys),
-            data: t.data.map(d => d)
+            data: t.data.map(d => Object.assign({},d))
         };
-        //d => Object.assign({},d))
+        //
     }
 
     save(force) {
