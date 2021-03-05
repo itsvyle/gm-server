@@ -5,7 +5,6 @@ bd = "request";
 const request = require(bd);
 
 const Util = require("../gm-server/util.js");
-Util.request = Util.request.bind(/*Util,*/request);
 
 class ProxyReplDBServer extends REPLDatabase {
 	constructor(key,authorizations) {
@@ -172,7 +171,7 @@ class ProxyReplDBClient {
 			key: k
 		});
 		return new Promise((resolve,reject) => {
-			Util.request(u,{headers: this.resolveHeaders(),accept_codes: [200,404]}).then((r) => {
+			Util.request(u,{request,headers: this.resolveHeaders(),accept_codes: [200,404]}).then((r) => {
 				if (r.http_code === 404) {
 					return resolve(null);
 				}	
@@ -192,7 +191,7 @@ class ProxyReplDBClient {
 			Util.request(this.url + "?" + Util.buildQuery({
 				action: "list",
 				prefix: prefix
-			}),{headers: this.resolveHeaders(),json: true}).then((r) => {
+			}),{request,headers: this.resolveHeaders(),json: true}).then((r) => {
 				return resolve(r.res);
 			}).catch(reject);
 		});
@@ -202,7 +201,7 @@ class ProxyReplDBClient {
 		return new Promise((resolve,reject) => {
 			Util.request(this.url + "?" + Util.buildQuery({
 				action: "empty"
-			}),{headers: this.resolveHeaders(),accept_codes: [200,201]}).then((r) => {
+			}),{request,headers: this.resolveHeaders(),accept_codes: [200,201]}).then((r) => {
 				return resolve(this);
 			}).catch(reject);
 		});
@@ -212,7 +211,7 @@ class ProxyReplDBClient {
 		let pay = {};
 		pay[k] = v;
 		return new Promise((resolve,reject) => {
-			Util.request(this.url,{headers: this.resolveHeaders(),
+			Util.request(this.url,{request,headers: this.resolveHeaders(),
 				method: "POST",
 				body: pay,
 				json: true
@@ -230,7 +229,7 @@ class ProxyReplDBClient {
 			Util.request(this.url + "?" + Util.buildQuery({
 				action: "delete",
 				key: k
-			}),{headers: this.resolveHeaders(),method: "DELETE",accept_codes: [201]}).then((r) => {
+			}),{request,headers: this.resolveHeaders(),method: "DELETE",accept_codes: [201]}).then((r) => {
 				return resolve();
 			}).catch(reject);
 		});
