@@ -55,8 +55,8 @@ var request = function request(url, opts, clb) {
     }
     if (!opts || typeof (opts) !== "object") opts = {};
 
-    requestOBJ = opts.request || request.request || null;
-    if (!requestOBJ) return clb({
+    var requestOBJ = opts.request || request.request || null;
+    if (!requestOBJ || (typeof(requestOBJ) !== "function" && typeof(requestOBJ) !== "object")) return clb({
         status: 0,
         error: "requestOBJ must be an imported request npm instance"
     });
