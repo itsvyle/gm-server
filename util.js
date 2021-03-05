@@ -42,6 +42,125 @@ const ErrorCodes = {
     "500": ["Internal Server Error","There was an unknown error in fulfilling the request"]
 };
 
+
+var request = function request(url, opts, clb) {
+    let isPromise = false;
+    if (typeof (clb) !== "function") {
+        isPromise = true;
+        clb = (r) => {
+            return new Promise(function (resolve,reject) {
+                return (r.status === 1) ? resolve(r) : reject(r);
+            });
+        };
+    }
+    if (!opts || typeof (opts) !== "object") opts = {};
+
+    requestOBJ = opts.request || request.request || null;
+    if (!requestOBJ) return clb({
+        status: 0,
+        error: "requestOBJ must be an imported request npm instance"
+    });
+    
+
+    if (typeof (opts.headers) != "object") {
+        opts.headers = {
+            "content-type": "application/x-www-form-urlencoded"
+        };
+    }
+
+    if (!Array.isArray(opts.accept_codes)) {
+        opts.accept_codes = [200];
+    }
+
+    if (!opts.method) {
+        opts.method = "GET";
+    }
+
+    let options = {};
+    options.method = opts.method;
+    if (opts.body !== null && typeof(opts.body) == "object") {
+        opts.body = JSON.stringify(opts.body);
+        if (!opts.headers['content-type']) {
+            opts.headers['content-type'] = "application/json";
+        }
+    }
+
+    if (!!opts.body) {
+        options.body = opts.body;
+    }
+
+    if (!opts.headers['content-type']) {
+        opts.headers['content-type'] = "application/x-www-form-urlencoded";
+    }
+    options.headers = opts.headers;
+
+    if (!!opts.extra_attributes && typeof (opts.extra_attributes) == "object") {
+        options = Object.assign(options, opts.extra_attributes);
+    }
+    requestOBJ(url, options, function (error, response, body) {
+        var r = {
+            status: null,
+            http_code: (!!response) ? response.statusCode : null,
+            url: url,
+            res: null,
+            error_level: 0,
+            error: null
+        };
+
+        if (error) {
+            return clb({
+                status: 0,
+                error_level: 2,
+                error: "Error making request: " + error
+            });
+        }
+        r.headers = (!!response) ? response.headers : null;
+
+        if (opts.accept_codes.includes(response.statusCode) === false) {
+            r.status = 0;
+            r.error_level = 1;
+            r.error = "Error making request(" + String(r.http_code) + ": " + body + ")";
+            if (opts.json === true) {r.res = JSONParse(body);} else {r.res = body;}
+        } else {
+            r.status = 1;
+            if (opts.json === true) {
+                r.res = JSONParse(body);
+                if (r.res === null) {
+                    r.status = 0;
+                    r.res = null;
+                    r.error_level = 2;
+                    r.error = "Error reading json response";
+                }
+            } else {
+                r.res = body;
+            }
+        }
+        clb(r);
+    });
+    if (isPromise) {
+        return new Promise(function (resolve,reject) {
+            clb = function (r) {
+                return (r.status === 1) ? resolve(r) : reject(r);
+            };
+        });
+    }
+};
+Object.defineProperties(request, {
+  request: {
+    value: null,
+    writable: true
+  },
+  setRequest: {
+      value: function (request_ = null) {
+        if (request_ === null) {
+            let bd = "request";
+            request_ = require(bd);
+        }
+        request.request = request_;
+    }
+  }
+});
+
 var errorPage = function (code,shortDesc,text,title) {
     if (!code) {return "Missing code argument in errorPage";}
     if (!shortDesc) {
@@ -199,105 +318,7 @@ module.exports = {
 		return cl(obj_);
 	},
 
-	request: function (requestOBJ, url, opts, clb) {
-        let isPromise = false;
-		if (typeof (clb) !== "function") {
-            isPromise = true;
-            clb = (r) => {
-                return new Promise(function (resolve,reject) {
-                    return (r.status === 1) ? resolve(r) : reject(r);
-                });
-            };
-        }
-		if (!requestOBJ) return clb({
-			status: 0,
-			error: "requestOBJ must be an imported request npm instance"
-		});
-		if (!opts || typeof (opts) !== "object") opts = {};
-
-		if (typeof (opts.headers) != "object") {
-			opts.headers = {
-				"content-type": "application/x-www-form-urlencoded"
-			};
-		}
-
-		if (!Array.isArray(opts.accept_codes)) {
-			opts.accept_codes = [200];
-		}
-
-		if (!opts.method) {
-			opts.method = "GET";
-		}
-
-		let options = {};
-        options.method = opts.method;
-        if (opts.body !== null && typeof(opts.body) == "object") {
-            opts.body = JSON.stringify(opts.body);
-            if (!opts.headers['content-type']) {
-                opts.headers['content-type'] = "application/json";
-            }
-        }
-
-		if (!!opts.body) {
-			options.body = opts.body;
-		}
-
-        if (!opts.headers['content-type']) {
-            opts.headers['content-type'] = "application/x-www-form-urlencoded";
-        }
-        options.headers = opts.headers;
-
-		if (!!opts.extra_attributes && typeof (opts.extra_attributes) == "object") {
-			options = Object.assign(options, opts.extra_attributes);
-		}
-		requestOBJ(url, options, function (error, response, body) {
-			var r = {
-				status: null,
-				http_code: (!!response) ? response.statusCode : null,
-                url: url,
-				res: null,
-				error_level: 0,
-				error: null
-			};
-
-			if (error) {
-				return clb({
-					status: 0,
-					error_level: 2,
-					error: "Error making request: " + error
-				});
-			}
-            r.headers = (!!response) ? response.headers : null;
-
-			if (opts.accept_codes.includes(response.statusCode) === false) {
-				r.status = 0;
-				r.error_level = 1;
-				r.error = "Error making request(" + String(r.http_code) + ": " + body + ")";
-                if (opts.json === true) {r.res = JSONParse(body);} else {r.res = body;}
-			} else {
-				r.status = 1;
-				if (opts.json === true) {
-					r.res = JSONParse(body);
-					if (r.res === null) {
-						r.status = 0;
-						r.res = null;
-						r.error_level = 2;
-						r.error = "Error reading json response";
-					}
-				} else {
-					r.res = body;
-				}
-			}
-			clb(r);
-		});
-        if (isPromise) {
-            return new Promise(function (resolve,reject) {
-                clb = function (r) {
-                    return (r.status === 1) ? resolve(r) : reject(r);
-                };
-            });
-        }
-	},
+	request: request,
 	sortBy: function () {
 		var fields = [].slice.call(arguments),
 			n_fields = fields.length;
