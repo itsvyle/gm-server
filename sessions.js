@@ -8,7 +8,7 @@ class Sessions extends EventEmitter {
     constructor(session_timeout) {
 		super();
         this.sessions = new Collection();
-        this.sessions.setNoDuplicateID(true);
+        //this.sessions.setNoDuplicateID(true);
         if (!session_timeout || typeof(session_timeout) !== "number") session_timeout = 90 * 1000;
         this.session_timeout = session_timeout;
 
