@@ -70,9 +70,9 @@ class SimpleDB {
 
         this.primer = null;
 
-        let bd = "@replit/database";
+        
         if (replToken !== false) {
-            if (!replITDB) replITDB = require(bd);
+            if (!replITDB) replITDB = module.exports.replITDB = getREPLITDB();
             this.db = new replITDB(replToken);
         }
         Object.defineProperty(this,"map_",{writable: true,value: null});
@@ -211,6 +211,7 @@ class SimpleDB {
     save(force) {
         let par = this,d = (force === true) ? this.toSave() : this.toSaveIfNeed();
         if (!d) return;
+        console.log(d);
         return this.db.set(this.dbEntry,d).then(() => {
             par.map_ = null;
             par.saved();
@@ -452,6 +453,48 @@ class SimpleDB {
         });
     }
 
+    static initDB() {
+        if (replITDB) {
+            module.exports.replITDB = replITDB;
+        } else {
+            replITDB = module.exports.replITDB = getREPLITDB();
+        }
+        return replITDB;
+    }
+
+}
+
+function getREPLITDB() {
+    let bd = "@replit/database";
+    var og = require(bd);
+    return class DatabaseFixed extends og {
+        constructor(key) {
+            super(key);
+        }
+
+        /**
+        * Sets a key
+        * @param {String} key Key
+        * @param {any} value Value
+        */
+        async set(key, value) {
+            const strValue = JSON.stringify(value);
+            let opts = {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: encodeURIComponent(key) + "=" + encodeURIComponent(strValue),
+            };
+            if (!Util.request.request) {
+                bd = "request";
+                opts.request = require(bd);
+            }
+            await Util.request(this.key,opts)
+
+            return this;
+        }
+    }
 }
 
 module.exports = SimpleDB;
+module.exports.getREPLITDB = getREPLITDB;
+module.exports.replITDB = replITDB;
