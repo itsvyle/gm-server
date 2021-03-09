@@ -499,7 +499,7 @@ module.exports = {
 		    console.log("\x1b[34m",m,resetColor);
 		    askReadCommand();
 		});
-	    }
+	    };
 	    askReadCommand();
 	},
     PromiseError: function (error) {
