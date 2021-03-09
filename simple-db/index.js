@@ -211,7 +211,6 @@ class SimpleDB {
     save(force) {
         let par = this,d = (force === true) ? this.toSave() : this.toSaveIfNeed();
         if (!d) return;
-        console.log(d);
         return this.db.set(this.dbEntry,d).then(() => {
             par.map_ = null;
             par.saved();
