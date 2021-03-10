@@ -5,3 +5,4 @@ module.exports = {
 	Flags: require("./flags.js")
 };
 
+void(0);
