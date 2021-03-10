@@ -45,7 +45,7 @@ function GMServer({update = false} = {}) {
             if (upToDate === true) {return;}
             console.log("\x1b[33m",`[gm-server,Update] Libraries are not up to date since ${firstDate} (${Util.formatTime(Date.now() - (new Date(firstDate)).getTime())})`);
             len = upToDate.length;
-            upToDate = upToDate.slice(0,GitMaxCommits).join("\n- ") + ((len <= GitMaxCommits) ? "" : "\n+" (len - GitMaxCommits) + " items");//
+            upToDate = upToDate.slice(0,GitMaxCommits).join("\n- ") + ((len <= GitMaxCommits) ? "" : "\n+" (len - GitMaxCommits) + " items");
             console.log(`There were *${len}* updates since last downloaded:\n- ${upToDate}`);
             console.log("\x1b[32m","[gm-server,Update] Command to type: " + `git clone https://github.com/${GitOwner}/${GitName}.git`);
             process.stdout.write(resetColor);
