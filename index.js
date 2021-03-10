@@ -44,6 +44,7 @@ function GMServer({update = false} = {}) {
             len = upToDate.length;
             upToDate = upToDate.slice(0,GitMaxCommits).join("\n- ") + ((len <= GitMaxCommits) ? "" : "\n+" (len - GitMaxCommits) + " items");//
             console.log(`There were *${len}* updates since last downloaded:\n- ${upToDate}`);
+            console.log("\x1b[32m","[gm-server,Update] Command to type: " + `git clone https://github.com/${GitOwner}/${GitName}.git`);
             process.stdout.write(resetColor);
         }).catch((r) => {
             console.error(redColor,`[gm-server,Update] ${r.error}`,resetColor);
