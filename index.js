@@ -36,7 +36,7 @@ function GMServer({update = false} = {}) {
                     break;
                 }
                 firstDate = d;
-                upToDate.push(`\x1b[4m@${c.commit.author.name}${resetColor}\x1b[33m at ${d}: '${c.commit.message}' / ${c.html_url}`);
+                upToDate.push(`@${c.commit.author.name} at ${d}: '\x1b[4m${c.commit.message}${resetColor}\x1b[33m' / ${c.html_url}`);
             }
             
             if (upToDate === true) {return;}
