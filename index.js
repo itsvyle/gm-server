@@ -7,6 +7,9 @@ const resetColor = "\x1b[0m";
 const redColor = "\x1b[31m";
 
 var Util,fs;
+/**
+ * Import the libraires with options
+ */
 function GMServer({update = false} = {}) {
     if (update) {
         process.stdout.write(resetColor);
