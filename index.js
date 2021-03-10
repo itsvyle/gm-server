@@ -1,7 +1,7 @@
 //All of the code is to check if libraries are up to date
 const GitOwner = "itsvyle";
 const GitName = "gm-server";
-const GitMaxCommits = 10;
+const GitMaxCommits = 5;
 
 const resetColor = "\x1b[0m";
 const redColor = "\x1b[31m";
