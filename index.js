@@ -50,7 +50,7 @@ function GMServer({update = false} = {}) {
             console.log("\x1b[32m","[gm-server,Update] Command to type: " + `git clone https://github.com/${GitOwner}/${GitName}.git`);
             process.stdout.write(resetColor);
         }).catch((r) => {
-            console.error(redColor,`[gm-server,Update] ${r.error}`,resetColor);//
+            console.error(redColor,`[gm-server,Update] ${r.error}`,resetColor);
         });
     }
     return GMServer;
