@@ -27,15 +27,19 @@ function GMServer({update = false} = {}) {
         }).then((r) => {
             let res = r.res;
             if (!Array.isArray(res)) return console.error(redColor,"[gm-server,Update] Error fetching latests commits: invalid response format",resetColor);
-            var len = res.length,i,upToDate = [],d,firstDate = null;
+            var len = res.length,i,upToDate = [],d,firstDate = null,c;
             for(i = 0;i < len;i++) {
-                let c = res[i];
-                if (!c.commit) continue;
+                c = res[i];
+                if (!c.commit) {
+                    c = res[i-1];
+                    continue;
+                }
                 d = c.commit.author.date;
                 if (d < dt_birth && i === 0) {
                     upToDate = true;
                     break;
                 } else if (d < dt_birth) {
+                    c = null;
                     break;
                 }
                 firstDate = d;
@@ -43,7 +47,7 @@ function GMServer({update = false} = {}) {
             }
             
             if (upToDate === true) {return;}
-            console.log("\x1b[33m",`[gm-server,Update] Libraries are not up to date since ${firstDate} (${Util.formatTime(Date.now() - (new Date(firstDate)).getTime())})`);
+            console.log("\x1b[33m",`[gm-server,Update] Libraries are not up to date since${(!c) ? "" : " AT LEAST"} ${firstDate} (${Util.formatTime(Date.now() - (new Date(firstDate)).getTime())})`);
             len = upToDate.length;
             upToDate = upToDate.slice(0,GitMaxCommits).join("\n- ") + ((len <= GitMaxCommits) ? "" : "\n+" (len - GitMaxCommits) + " items");
             console.log(`There were *${len}* updates since last downloaded:\n- ${upToDate}`);
