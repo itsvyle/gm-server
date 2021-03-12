@@ -577,6 +577,9 @@ module.exports = {
 		return res.send(data);
         });
     },
+    fullRouteURL: function (req) {
+        return (req.protocol + '://' + req.get('host') + req.originalUrl).split(req.path)[0] + req.path;
+    },
     removeAccents: function (str) {
         if (typeof(str) !== "string") return null;
         return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
